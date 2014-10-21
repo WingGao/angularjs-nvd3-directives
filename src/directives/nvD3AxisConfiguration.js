@@ -3,7 +3,7 @@ function configureXaxis(chart, scope, attrs) {
 		chart.xAxis.orient(attrs.xaxisorient);
 	}
 	if (attrs.xaxisticks) {
-		chart.xAxis.scale().ticks(attrs.xaxisticks);
+		chart.xAxis.scale(chart.x).ticks(attrs.xaxisticks);
 	}
 	if (attrs.xaxistickvalues) {
 		if (Array.isArray(scope.$eval(attrs.xaxistickvalues))) {
