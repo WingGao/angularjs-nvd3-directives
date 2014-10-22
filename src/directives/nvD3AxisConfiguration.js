@@ -147,7 +147,7 @@ function configureYaxis (chart, scope, attrs) {
 		chart.yAxis.orient(attrs.yaxisorient);
 	}
 	if (attrs.yaxisticks) {
-		chart.yAxis.scale().ticks(attrs.yaxisticks);
+		chart.yAxis.scale(chart.y).ticks(attrs.yaxisticks);
 	}
 	if (attrs.yaxistickvalues) {
 		if (Array.isArray(scope.$eval(attrs.yaxistickvalues))) {

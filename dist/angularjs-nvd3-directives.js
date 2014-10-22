@@ -1,4 +1,4 @@
-/*! angularjs-nvd3-directives - v0.0.7 - 2014-10-21
+/*! angularjs-nvd3-directives - v0.0.7 - 2014-10-22
  * http://cmaurer.github.io/angularjs-nvd3-directives
  * Copyright (c) 2014 Christian Maurer; Licensed Apache License, v2.0 */
 ( function () {
@@ -544,7 +544,7 @@
       chart.yAxis.orient( attrs.yaxisorient );
     }
     if ( attrs.yaxisticks ) {
-      chart.yAxis.scale().ticks( attrs.yaxisticks );
+      chart.yAxis.scale( chart.y ).ticks( attrs.yaxisticks );
     }
     if ( attrs.yaxistickvalues ) {
       if ( Array.isArray( scope.$eval( attrs.yaxistickvalues ) ) ) {
@@ -835,6 +835,7 @@
           clipvoronoi: '@',
           interpolate: '@',
           callback: '&',
+          points: '&',
           useinteractiveguideline: '@',
           xaxisorient: '&',
           xaxisticks: '@',
@@ -920,7 +921,9 @@
                     return d.area;
                   } : function () {
                     return attrs.isarea === 'true';
-                  } );
+                  } ).points( attrs.points === undefined ? function () {
+                    return null;
+                  } : scope.points() );
                   if ( attrs.useinteractiveguideline ) {
                     chart.useInteractiveGuideline( attrs.useinteractiveguideline === undefined ? false : attrs.useinteractiveguideline === 'true' );
                   }

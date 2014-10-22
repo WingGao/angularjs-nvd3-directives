@@ -93,7 +93,8 @@
                     interpolate: '@',
 
                     callback: '&',
-
+                    //point
+                    points: '&',
                     useinteractiveguideline: '@',
                     //xaxis
                     xaxisorient: '&',
@@ -193,8 +194,8 @@
                                         .clipVoronoi(attrs.clipvoronoi === undefined ? false : (attrs.clipvoronoi === 'true'))
                                         .interpolate(attrs.interpolate === undefined ? 'linear' : attrs.interpolate)
                                         .color(attrs.color === undefined ? nv.utils.defaultColor()  : scope.color())
-                                        .isArea(attrs.isarea === undefined ? function(d) { return d.area; } : function(){ return (attrs.isarea === 'true'); });
-
+                                        .isArea(attrs.isarea === undefined ? function(d) { return d.area; } : function(){ return (attrs.isarea === 'true'); })
+                                        .points(attrs.points === undefined ?function(){return null}:scope.points());
                                     if (attrs.useinteractiveguideline) {
                                         chart.useInteractiveGuideline(attrs.useinteractiveguideline === undefined ? false : (attrs.useinteractiveguideline === 'true'));
                                     }
