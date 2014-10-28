@@ -3,7 +3,7 @@ function configureXaxis(chart, scope, attrs) {
 		chart.xAxis.orient(attrs.xaxisorient);
 	}
 	if (attrs.xaxisticks) {
-		chart.xAxis.scale(chart.x).ticks(attrs.xaxisticks);
+		chart.xAxis.scale(chart.x).ticks(scope.xaxisticks);
 	}
 	if (attrs.xaxistickvalues) {
 		if (Array.isArray(scope.$eval(attrs.xaxistickvalues))) {
@@ -144,6 +144,7 @@ function configureX2axis (chart, scope, attrs) {
 
 function configureYaxis (chart, scope, attrs) {
 	if (attrs.yaxisorient) {
+
 		chart.yAxis.orient(attrs.yaxisorient);
 	}
 	if (attrs.yaxisticks) {
@@ -152,7 +153,7 @@ function configureYaxis (chart, scope, attrs) {
 	if (attrs.yaxistickvalues) {
 		if (Array.isArray(scope.$eval(attrs.yaxistickvalues))) {
 			chart.yAxis.tickValues(scope.$eval(attrs.yaxistickvalues));
-		} else if (typeof scope.yaxistickvalues() === 'function') {
+		} else if (typeof scope.yaxistickvalues() === 'object') {
 			chart.yAxis.tickValues(scope.yaxistickvalues());
 		}
 	}
@@ -177,7 +178,7 @@ function configureYaxis (chart, scope, attrs) {
 	if (attrs.yaxisdomain) {
 		if (Array.isArray(scope.$eval(attrs.yaxisdomain))) {
 			chart.yDomain(scope.$eval(attrs.yaxisdomain));
-		} else if (typeof scope.yaxisdomain() === 'function') {
+		} else if (typeof scope.yaxisdomain() === 'object') {
 			chart.yDomain(scope.yaxisdomain());
 		}
 	}

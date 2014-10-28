@@ -1,4 +1,4 @@
-/*! angularjs-nvd3-directives - v0.0.7 - 2014-10-22
+/*! angularjs-nvd3-directives - v0.0.7 - 2014-10-28
  * http://cmaurer.github.io/angularjs-nvd3-directives
  * Copyright (c) 2014 Christian Maurer; Licensed Apache License, v2.0 */
 ( function () {
@@ -400,7 +400,7 @@
       chart.xAxis.orient( attrs.xaxisorient );
     }
     if ( attrs.xaxisticks ) {
-      chart.xAxis.scale( chart.x ).ticks( attrs.xaxisticks );
+      chart.xAxis.scale( chart.x ).ticks( scope.xaxisticks );
     }
     if ( attrs.xaxistickvalues ) {
       if ( Array.isArray( scope.$eval( attrs.xaxistickvalues ) ) ) {
@@ -541,6 +541,7 @@
 
   function configureYaxis( chart, scope, attrs ) {
     if ( attrs.yaxisorient ) {
+
       chart.yAxis.orient( attrs.yaxisorient );
     }
     if ( attrs.yaxisticks ) {
@@ -549,7 +550,7 @@
     if ( attrs.yaxistickvalues ) {
       if ( Array.isArray( scope.$eval( attrs.yaxistickvalues ) ) ) {
         chart.yAxis.tickValues( scope.$eval( attrs.yaxistickvalues ) );
-      } else if ( typeof scope.yaxistickvalues() === 'function' ) {
+      } else if ( typeof scope.yaxistickvalues() === 'object' ) {
         chart.yAxis.tickValues( scope.yaxistickvalues() );
       }
     }
@@ -574,7 +575,7 @@
     if ( attrs.yaxisdomain ) {
       if ( Array.isArray( scope.$eval( attrs.yaxisdomain ) ) ) {
         chart.yDomain( scope.$eval( attrs.yaxisdomain ) );
-      } else if ( typeof scope.yaxisdomain() === 'function' ) {
+      } else if ( typeof scope.yaxisdomain() === 'object' ) {
         chart.yDomain( scope.yaxisdomain() );
       }
     }
@@ -838,7 +839,7 @@
           points: '&',
           useinteractiveguideline: '@',
           xaxisorient: '&',
-          xaxisticks: '@',
+          xaxisticks: '=',
           xaxistickvalues: '&xaxistickvalues',
           xaxisticksubdivide: '&',
           xaxisticksize: '&',

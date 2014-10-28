@@ -98,7 +98,7 @@
                     useinteractiveguideline: '@',
                     //xaxis
                     xaxisorient: '&',
-                    xaxisticks: '@',
+                    xaxisticks: '=',
                     xaxistickvalues: '&xaxistickvalues',
                     xaxisticksubdivide: '&',
                     xaxisticksize: '&',

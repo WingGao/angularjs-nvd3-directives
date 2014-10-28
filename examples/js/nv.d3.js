@@ -1268,6 +1268,7 @@ nv.utils.optionsFunc = function(args) {
         g.selectAll('g') // the g's wrapping each tick
             .each(function(d,i) {
               d3.select(this).select('text').attr('opacity', 1);
+              d3.select(this).attr('class', 'nv-axis-'+d);
               if (scale(d) < scale.range()[1] + 10 || scale(d) > scale.range()[0] - 10) { // 10 is assuming text height is 16... if d is 0, leave it!
                 if (d > 1e-10 || d < -1e-10) // accounts for minor floating point errors... though could be problematic if the scale is EXTREMELY SMALL
                   d3.select(this).attr('opacity', 0);
@@ -3222,7 +3223,11 @@ nv.models.cumulativeLineChart = function() {
       if (!line.values) {
          return line;
       }
-      var v = lines.y()(line.values[idx], idx);
+      var indexValue = line.values[idx];
+      if (indexValue == null) {
+        return line;
+      }
+      var v = lines.y()(indexValue, idx);
 
       //TODO: implement check below, and disable series if series loses 100% or more cause divide by 0 issue
       if (v < -.95 && !noErrorCheck) {
@@ -4955,7 +4960,7 @@ nv.models.indentedTree = function() {
               var legendText = d3.select(this).select('text');
               var nodeTextLength;
               try {
-                nodeTextLength = legendText.getComputedTextLength();
+                nodeTextLength = legendText.node().getComputedTextLength();
                 // If the legendText is display:none'd (nodeTextLength == 0), simulate an error so we approximate, instead
                 if(nodeTextLength <= 0) throw Error();
               }
@@ -5425,6 +5430,9 @@ nv.models.lineChart = function() {
     , noData = 'No Data Available.'
     , dispatch = d3.dispatch('tooltipShow', 'tooltipHide', 'stateChange', 'changeState')
     , transitionDuration = 250
+    , pointFunc = function(){
+        return null;
+    }
     ;
 
   xAxis
@@ -5592,7 +5600,14 @@ nv.models.lineChart = function() {
           .datum(data.filter(function(d) { return !d.disabled }))
 
       linesWrap.transition().call(lines);
-
+      //Setup Points
+        var points =linesWrap.selectAll('.nv-point');
+        points.each(function(data){
+            var c = d3.select(this);
+            var p = d3.select(this.parentNode);
+            pointFunc(p, parseFloat(c.attr('cx')), parseFloat(c.attr('cy')), data);
+            c.remove();
+        });
       //------------------------------------------------------------
 
 
@@ -5600,10 +5615,10 @@ nv.models.lineChart = function() {
       // Setup Axes
 
       if (showXAxis) {
-        xAxis
-          .scale(x)
-          .ticks( availableWidth / 100 )
-          .tickSize(-availableHeight, 0);
+          if(xAxis.ticks()==null)
+              xAxis.scale(x).ticks(availableWidth / 100);
+          else
+            xAxis.scale(x).tickSize(-availableHeight, 0);
 
         g.select('.nv-x.nv-axis')
             .attr('transform', 'translate(0,' + y.range()[0] + ')');
@@ -5613,10 +5628,10 @@ nv.models.lineChart = function() {
       }
 
       if (showYAxis) {
-        yAxis
-          .scale(y)
-          .ticks( availableHeight / 36 )
-          .tickSize( -availableWidth, 0);
+          if(yAxis.ticks()==null)
+              yAxis.scale(y).ticks(availableHeight / 36);
+          else
+              yAxis.scale(y).tickSize(-availableWidth, 0);
 
         g.select('.nv-y.nv-axis')
             .transition()
@@ -5805,7 +5820,11 @@ nv.models.lineChart = function() {
     yAxis.orient( (_) ? 'right' : 'left');
     return chart;
   };
-
+  chart.points = function(_){
+      if(!arguments.length) return pointFunc;
+      pointFunc = _;
+      return chart;
+  };
   chart.useInteractiveGuideline = function(_) {
     if(!arguments.length) return useInteractiveGuideline;
     useInteractiveGuideline = _;
@@ -6684,6 +6703,7 @@ nv.models.lineWithFocusChart = function() {
                 .map(function(d,i) {
                   return {
                     key: d.key,
+                    area: d.area,
                     values: d.values.filter(function(d,i) {
                       return lines.x()(d,i) >= extent[0] && lines.x()(d,i) <= extent[1];
                     })
@@ -10262,6 +10282,7 @@ nv.models.pie = function() {
     , id = Math.floor(Math.random() * 10000) //Create semi-unique ID in case user doesn't select one
     , color = nv.utils.defaultColor()
     , valueFormat = d3.format(',.2f')
+    , labelFormat = d3.format('%')
     , showLabels = true
     , pieLabelsOutside = true
     , donutLabelsOutside = false
@@ -10469,11 +10490,13 @@ nv.models.pie = function() {
                       Adjust the label's y-position to remove the overlap.
                       */
                       var center = labelsArc.centroid(d);
-                      var hashKey = createHashKey(center);
-                      if (labelLocationHash[hashKey]) {
-                        center[1] -= avgHeight;
+                      if(d.value){
+                        var hashKey = createHashKey(center);
+                        if (labelLocationHash[hashKey]) {
+                          center[1] -= avgHeight;
+                        }
+                        labelLocationHash[createHashKey(center)] = true;
                       }
-                      labelLocationHash[createHashKey(center)] = true;
                       return 'translate(' + center + ')'
                     }
                 });
@@ -10484,7 +10507,7 @@ nv.models.pie = function() {
                   var labelTypes = {
                     "key" : getX(d.data),
                     "value": getY(d.data),
-                    "percent": d3.format('%')(percent)
+                    "percent": labelFormat(percent)
                   };
                   return (d.value && percent > labelThreshold) ? labelTypes[labelType] : '';
                 });
@@ -10643,6 +10666,12 @@ nv.models.pie = function() {
   chart.valueFormat = function(_) {
     if (!arguments.length) return valueFormat;
     valueFormat = _;
+    return chart;
+  };
+
+  chart.labelFormat = function(_) {
+    if (!arguments.length) return labelFormat;
+    labelFormat = _;
     return chart;
   };
 
@@ -10875,9 +10904,9 @@ nv.models.pieChart = function() {
   chart.dispatch = dispatch;
   chart.pie = pie;
 
-  d3.rebind(chart, pie, 'valueFormat', 'values', 'x', 'y', 'description', 'id', 'showLabels', 'donutLabelsOutside', 'pieLabelsOutside', 'labelType', 'donut', 'donutRatio', 'labelThreshold');
+  d3.rebind(chart, pie, 'valueFormat', 'labelFormat', 'values', 'x', 'y', 'description', 'id', 'showLabels', 'donutLabelsOutside', 'pieLabelsOutside', 'labelType', 'donut', 'donutRatio', 'labelThreshold');
   chart.options = nv.utils.optionsFunc.bind(chart);
-  
+
   chart.margin = function(_) {
     if (!arguments.length) return margin;
     margin.top    = typeof _.top    != 'undefined' ? _.top    : margin.top;
