@@ -69,7 +69,7 @@
                     data: '=',
                     filtername: '=',
                     filtervalue: '=',
-                    width: '@',
+                    width: '=',
                     height: '@',
                     id: '@',
                     showlegend: '@',

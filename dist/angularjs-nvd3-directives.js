@@ -1,4 +1,4 @@
-/*! angularjs-nvd3-directives - v0.0.7 - 2014-10-28
+/*! angularjs-nvd3-directives - v0.0.7 - 2014-11-03
  * http://cmaurer.github.io/angularjs-nvd3-directives
  * Copyright (c) 2014 Christian Maurer; Licensed Apache License, v2.0 */
 ( function () {
@@ -813,7 +813,7 @@
           data: '=',
           filtername: '=',
           filtervalue: '=',
-          width: '@',
+          width: '=',
           height: '@',
           id: '@',
           showlegend: '@',
